@@ -1,0 +1,25 @@
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Logs
+*.log
+etl_log.txt
+
+# Virtual environment
+.venv/
+.env
+
+# Unnecessary folders and files
+.vscode/
+dags/
+data_sources/*.csv
+logs/
+Notes/
+raw_data/*csv
+test_package/
+transform/*.parquet
+transform/*.csv
+# Optional: ignore local database files
+*.sqlite3

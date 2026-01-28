@@ -1,0 +1,207 @@
+🧱 Visual ETL Pipeline Flow
+┌──────────────┐
+│  CSV Files   │
+│ data_sources │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│   Extract    │
+│  (Python)    │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│  Transform   │
+│  (Pandas)    │
+│  - Cleaning  │
+│  - Enriching │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│     Load     │
+│ PostgreSQL   │
+│ SQLAlchemy   │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│   Logging &  │
+│   Testing    │
+│  Pytest      │
+└──────────────┘
+
+📁 Project Structure
+etl_project/
+│
+├── extract/                 # Extract raw CSV data
+│   └── extract_orders.py
+│
+├── transform/               # Data cleaning & transformation
+│   └── transform_orders.py
+│
+├── load/                    # Load data into PostgreSQL
+│   └── load_to_postgres.py
+│
+├── tests/                   # Automated ETL tests
+│   └── test_etl_pipeline.py
+│
+├── data_sources/            # Source CSVs (empty on GitHub)
+├── raw_data/                # Extracted raw files
+│
+├── run_pipeline.py          # ETL orchestration script
+├── requirements.txt         # Python dependencies
+├── README.md
+└── .gitignore
+
+⚙️ Technologies Used
+
+Python – Core ETL logic
+
+Pandas – Data transformation and validation
+
+PostgreSQL – Target data warehouse
+
+SQLAlchemy – Database connectivity & ORM
+
+Pytest – Automated ETL testing
+
+Docker (optional) – Containerized database setup
+
+Git / GitHub – Version control
+
+✨ Key Features
+
+✅ Incremental loading to prevent duplicate records
+
+✅ Idempotent ETL runs (safe to re-run pipeline)
+
+✅ Modular architecture (extract, transform, load)
+
+✅ Automated tests for extract & transform stages
+
+✅ Detailed logging for observability and debugging
+
+✅ Scheduling support (cron / Windows Task Scheduler)
+
+✅ Resume-ready project structure
+
+🧱 Target Database Schema (PostgreSQL)
+orders (
+  order_id         INTEGER PRIMARY KEY,
+  customer_id      INTEGER,
+  order_date       DATE,
+  amount           NUMERIC,
+  tax              NUMERIC,
+  amount_category  TEXT
+);
+
+🚀 ETL Workflow
+
+Extract
+
+Reads raw CSV files from data_sources/
+
+Copies raw data to raw_data/ for traceability
+
+Transform
+
+Cleans invalid or missing values
+
+Computes derived fields (tax, amount category)
+
+Ensures data quality rules
+
+Load
+
+Inserts only new records into PostgreSQL
+
+Prevents duplicates via incremental logic
+
+Logging
+
+All stages log execution details to etl_log.txt
+
+Testing
+
+Pytest validates extraction and transformation outputs
+
+🏃 Running the Pipeline
+Manual Execution
+python run_pipeline.py
+
+Automated Scheduling
+Linux / WSL (Cron)
+crontab -e
+0 10 * * * /usr/bin/python3 /home/youruser/etl_project/run_pipeline.py >> /home/youruser/etl_project/etl_log.txt 2>&1
+
+Windows Task Scheduler
+
+Program: Full path to python.exe
+
+Arguments: run_pipeline.py
+
+Start in: etl_project
+
+Logs written to etl_log.txt
+
+✅ Testing
+
+Run automated tests:
+
+pytest tests/
+
+Tests Include
+
+✔ Extracted CSV file existence
+
+✔ Required transformed columns
+
+✔ No negative transaction amounts
+
+📂 Logging
+
+All ETL stages log timestamps and messages to etl_log.txt
+
+Useful for:
+
+Monitoring pipeline health
+
+Debugging failures
+
+Verifying successful runs
+
+🎯 Project Goals
+
+Build a reusable, production-style ETL pipeline
+
+Apply data engineering best practices
+
+Create a strong portfolio project for data engineering roles
+
+💡 Notes
+
+Empty directories are preserved using .gitkeep
+
+.gitignore excludes:
+
+Logs
+
+Virtual environments
+
+Cache files
+
+Sensitive credentials
+
+⭐ Why This Project Matters
+
+This project demonstrates:
+
+Practical ETL design (not just scripts)
+
+Incremental and idempotent data loading
+
+Testing, logging, and orchestration
+
+Skills directly applicable to Data Engineer / Analytics Engineer roles
