@@ -17,7 +17,6 @@ if not latest_raw_files:
 latest_raw_csv = sorted(latest_raw_files)[-1]
 EXTRACT_FILE = os.path.join(raw_data_path, latest_raw_csv)
 
-
 # Path to raw_data folder
 transform_path = os.path.abspath(os.path.join(script_dir, "..", "transform"))
 
@@ -30,15 +29,24 @@ if not latest_transform_file:
 latest_transform_csv = sorted(latest_transform_file)[-1]
 TRANSFORM_FILE = os.path.join(transform_path, latest_transform_csv)
 
-#TRANSFORM_FILE = os.path.join(BASE_DIR, "..", "transform", "transformed_orders.csv")
 
 def test_extracted_file_exists():
     assert os.path.exists(EXTRACT_FILE)
 
+
 def test_transformed_file_columns():
     df = pd.read_csv(TRANSFORM_FILE)
-    expected_cols = ["order_id", "customer_name", "product", "amount", "tax", "amount_category", "order_date"]
+    expected_cols = [
+        "order_id",
+        "customer_name",
+        "product",
+        "amount",
+        "tax",
+        "amount_category",
+        "order_date",
+    ]
     assert all(col in df.columns for col in expected_cols)
+
 
 def test_no_negative_amounts():
     df = pd.read_csv(TRANSFORM_FILE)

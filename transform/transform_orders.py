@@ -1,10 +1,8 @@
-# transform/transform_orders.py
 import os
 import pandas as pd
 import sys
 from multiprocessing import cpu_count, Pool
 
-# --- Ensure root folder is in sys.path for importing logger_config ---
 script_path = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(script_path, ".."))
 if PROJECT_ROOT not in sys.path:
@@ -60,9 +58,7 @@ def transform_orders():
     latest_file_path = os.path.join(raw_data_path, latest_file)
     logger.info(f"Latest CSV file found: {latest_file_path}")
 
-    # -----------------------------
     # Read CSV in chunks
-    # -----------------------------
     chunksize = 100_000
     dfs = []
     total_rows = 0
@@ -73,9 +69,7 @@ def transform_orders():
     df = pd.concat(dfs, ignore_index=True)
     logger.info(f"Total rows loaded from CSV: {total_rows}")
 
-    # -----------------------------
     # Parallel transformation
-    # -----------------------------
     num_cpus = cpu_count()
     logger.info(f"Applying transformations using {num_cpus} CPU cores")
 
@@ -88,17 +82,13 @@ def transform_orders():
     # Combine all transformed chunks
     df_transformed = pd.concat(df_transformed_chunks, ignore_index=True)
 
-    # -----------------------------
     # Deduplicate if needed
-    # -----------------------------
     duplicate_count = df_transformed.duplicated().sum()
     if duplicate_count > 0:
         logger.warning(f"{duplicate_count} duplicate rows found")
         df_transformed = df_transformed.drop_duplicates()
 
-    # -----------------------------
     # Save results
-    # -----------------------------
     output_csv_path = os.path.join(transform_path, "transformed_orders.csv")
     output_parquet_path = os.path.join(transform_path, "transformed_orders.parquet")
 
