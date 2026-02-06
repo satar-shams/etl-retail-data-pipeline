@@ -205,3 +205,110 @@ Incremental and idempotent data loading
 Testing, logging, and orchestration
 
 Skills directly applicable to Data Engineer / Analytics Engineer roles
+
+
+## 🛠️ Monitoring & Logging
+
+This ETL project includes a **robust monitoring and logging system** to track the execution of each pipeline step, detect errors, and monitor data quality.
+
+### 1. Logging Implementation
+- All scripts (`extract`, `transform`, `load`) use a **centralized logger** defined in `logger_config.py`.
+- Logs are written to `logs/etl_log.txt`.
+- The logging format includes:
+Timestamp | Level | Module | Message
+
+Example:
+2026-02-05 19:12:16 | INFO | main | Total rows after transform: 1000
+
+
+### 2. Log Levels
+- **INFO**: Successful execution of each step, file paths, and row counts.
+- **WARNING**: Data quality issues such as:
+- Null values in important columns
+- Negative values in `amount`
+- Duplicate rows
+- **ERROR**: Fatal issues such as missing files or database connection failures.
+
+### 3. Pipeline Run Monitoring
+- The main pipeline (`run_pipeline.py`) logs:
+- Step start and end markers (`START EXTRACT`, `END EXTRACT`, etc.)
+- Duration of each step
+- Python executable and working directory
+- Standard output and errors from each script
+
+- Each run is separated by a **divider line and a blank line** for clarity in multi-run logs.
+
+### 4. Benefits
+- Easy to monitor pipeline execution in real-time or from `etl_log.txt`.
+- Provides **automatic alerts** for data quality issues without interrupting the pipeline.
+- Ideal for scheduled runs (cron jobs) or production monitoring.
+- Enables **quick debugging** in case of failures.
+
+
+
+🔐 Secrets Management with Vault
+
+To securely manage sensitive data (like database credentials), this ETL project uses HashiCorp Vault.
+
+1️⃣ Why Vault?
+
+Keeps credentials (username, password, host, port, database) out of the code.
+
+Supports secure storage, versioning, and dynamic secrets.
+
+Allows CI/CD pipelines to retrieve secrets securely.
+
+2️⃣ Vault Setup (Development)
+
+Run Vault in Docker:
+
+docker run --cap-add=IPC_LOCK -e VAULT_DEV_ROOT_TOKEN_ID=root -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 -p 8200:8200 --name vault-dev hashicorp/vault:latest
+
+
+Start Vault if stopped:
+
+docker start vault-dev
+
+
+Enable KV-v2 secrets engine for ETL:
+
+docker exec -it vault-dev sh -c "export VAULT_ADDR='http://127.0.0.1:8200' && export VAULT_TOKEN='root' && vault secrets enable -path=etl kv-v2"
+
+
+Store PostgreSQL credentials in Vault:
+
+docker exec -it vault-dev sh -c "
+export VAULT_ADDR='http://127.0.0.1:8200' &&
+export VAULT_TOKEN='root' &&
+vault kv put etl/postgres username='postgres' password='1234' host='localhost' dbname='data_engineer_project' port='5432'
+"
+
+
+Retrieve credentials (test):
+
+docker exec -it vault-dev sh -c "export VAULT_ADDR='http://127.0.0.1:8200' && export VAULT_TOKEN='root' && vault kv get etl/postgres"
+
+3️⃣ Usage in ETL Scripts
+
+The ETL code retrieves secrets using a Vault client:
+
+from vault_client import get_secret
+
+secrets = get_secret("etl/postgres")
+db_url = (
+    f"postgresql://{secrets['username']}:{secrets['password']}"
+    f"@{secrets['host']}:{secrets['port']}/{secrets['dbname']}"
+)
+
+
+No credentials are stored in code or git repositories.
+
+4️⃣ Notes for Production
+
+Do not use development mode (VAULT_DEV_ROOT_TOKEN_ID=root) in production.
+
+In production, use a secure Vault cluster and CI/CD secrets injection.
+
+Vault allows rotation of credentials without modifying code.
+
+✅ This section ensures anyone can reproduce your Vault setup locally and understand how secrets are handled in the ETL pipeline.

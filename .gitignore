@@ -21,5 +21,8 @@ raw_data/*csv
 test_package/
 transform/*.parquet
 transform/*.csv
+logs/
+postgres
 # Optional: ignore local database files
 *.sqlite3
+
